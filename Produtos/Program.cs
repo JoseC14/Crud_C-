@@ -7,6 +7,8 @@ class Program
     static void Main()
     {
         int opcao,id;
+        char voltar;
+        float preco;
         Console.WriteLine("************************\n");
         Console.WriteLine("* CADASTRO DE PRODUTOS *\n");
         Console.WriteLine("************************\n\n");
@@ -17,11 +19,18 @@ class Program
             Console.WriteLine("Escolha uma opção\n");
             Console.WriteLine("1 - Cadastrar Produtos\n");
             Console.WriteLine("2 - Gerenciar Produtos\n");
+            Console.WriteLine("3 - Sair do Programa\n");
 
-            opcao = Convert.ToInt32(Console.ReadLine());
+            if (!int.TryParse(Console.ReadLine(), out opcao)){
+                Console.WriteLine("Entrada Inválida. Digite um número inteiro");
+                continue;
+            };
+             
+            
             ProdutoDao produtoDao = new ProdutoDao();
             if (opcao == 1)
             {
+                cadProdutos:
                 Console.WriteLine("*********************\n");
                 Console.WriteLine("* Cadastrar Produto *\n");
                 Console.WriteLine("*********************\n");
@@ -32,7 +41,16 @@ class Program
                 produto.Nome = Console.ReadLine();
 
                 Console.WriteLine("Digite o preço");
-                produto.Preco = float.Parse(Console.ReadLine());
+                if (!float.TryParse(Console.ReadLine(), out preco))
+                {
+                    Console.WriteLine("Preço inválido!");
+                    goto cadProdutos;
+                }
+                else
+                {
+                    produto.Preco = preco;
+
+                }
 
                 Console.WriteLine("Digite a validade");
                 produto.Validade = Console.ReadLine();
@@ -52,24 +70,30 @@ class Program
             }
             else if(opcao == 2)
             {
+                Gerenciamento:
                 Console.WriteLine("**********************\n");
                 Console.WriteLine("* Gerenciar Produtos *\n");
                 Console.WriteLine("**********************\n");
 
                 listagemProdutos:
                 produtoDao.listarProdutos();
-                Console.WriteLine("Digite o ID para fazer mais operações (Deletar ou Alterar) ou 0 para voltar ao menu principal");
-                id = Convert.ToInt32(Console.ReadLine());
-                
+                Console.WriteLine("Digite o ID para fazer mais operações (Deletar ou Alterar) ou digite qualquer letra para voltar ao menu principal");
+                if (!int.TryParse(Console.ReadLine(),out id))
+                {
+                    goto menuPrincipal;
+                }
+
+
+
+                if(id == 0)
+                {
+                    goto menuPrincipal;
+                }
                 while (true)
                 {
-                    Console.WriteLine("Digite a operação (1 - Deletar; 2 - Atualizar) ");
+                    Console.WriteLine("Digite a operação (1 - Deletar; 2 - Atualizar; 3 - Voltar para o gerenciamento) ");
                     opcao = Convert.ToInt32(Console.ReadLine());
-                    if(opcao == 0)
-                    {
-                        goto menuPrincipal;
-                    }
-                    else if(opcao == 1)
+                     if(opcao == 1)
                     {
                         produtoDao.deletarProduto(id);
                         goto listagemProdutos;
@@ -77,41 +101,48 @@ class Program
                     {
                         ProdutoDto produtoDto = new ProdutoDto();
                         List<object> lista =  produtoDao.getProdutoById(id);
-                        Console.WriteLine("Nome");
+                        Console.WriteLine("Nome(Deixe Vazio para não mudar)");
                         produtoDto.Nome = Console.ReadLine();
 
                         if (string.IsNullOrWhiteSpace(produtoDto.Nome))
                         {
-                            produtoDto.Nome = (string?)lista[0];
+                            produtoDto.Nome = (string?)lista[1];
                         }
 
-                        Console.WriteLine("Preço");
-                        produtoDto.Preco = float.Parse(Console.ReadLine());
+                        Console.WriteLine("Preço(Deixe Vazio para não mudar)");
+                        string precoStr = Console.ReadLine();
 
-                        if (string.IsNullOrWhiteSpace(produtoDto.Preco.ToString()))
+                        if (string.IsNullOrWhiteSpace(precoStr.ToString()))
                         {
-                            produtoDto.Preco = (float)lista[1];
+                            produtoDto.Preco = (float)lista[2];
+                        }
+                        else
+                        {
+                            produtoDto.Preco = float.Parse(precoStr);
                         }
 
-                        Console.WriteLine("Validade");
+                        Console.WriteLine("Validade(Deixe Vazio para não mudar)");
                         produtoDto.Validade = Console.ReadLine();
 
                         if (string.IsNullOrWhiteSpace(produtoDto.Validade))
                         {
-                            produtoDto.Validade = (string?)lista[2];
+                            produtoDto.Validade = (string?)lista[3];
                         }
 
-                        Console.WriteLine("Categoira");
+                        Console.WriteLine("Categoria(Deixe Vazio para não mudar)");
                         produtoDto.Categoria = Console.ReadLine();
 
                         if (string.IsNullOrWhiteSpace(produtoDto.Categoria))
                         {
-                            produtoDto.Categoria = (string?)lista[2];
+                            produtoDto.Categoria = (string?)lista[4];
                         }
 
                         produtoDao.alterarProduto(produtoDto,id);
 
 
+                    }else if(opcao == 3)
+                    {
+                        goto Gerenciamento;
                     }
                     else
                     {
@@ -121,6 +152,9 @@ class Program
                 
 
 
+            }else if(opcao == 3)
+            {
+                break;
             }
             else
             {

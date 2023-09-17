@@ -3,6 +3,8 @@ using System.Data.SqlClient;
 using System.Collections.Generic;
 using ConexaoDao;
 using Produto.Dto;
+using ConsoleTables;
+
 namespace Produto.Dao
 {
     public class ProdutoDao
@@ -12,7 +14,7 @@ namespace Produto.Dao
         {
             Conexao conexao = new Conexao();
 
-            string Query = "INSERT INTO tb_produtos(nome,preco,validade,categoria) VALUES (@nome, @preco, @validade, @categoria)";
+            string Query = "INSERT INTO produtos(nome,preco,validade,categoria) VALUES (@nome, @preco, @validade, @categoria)";
             try
             {
                 MySqlCommand cmd = new MySqlCommand(Query, conexao.Conectar());
@@ -39,14 +41,14 @@ namespace Produto.Dao
         public void listarProdutos()
         {
             Conexao conexao = new Conexao();
-            string Query = "SELECT * FROM tb_produtos";
-            Console.WriteLine("\tID\tNome\tPreço\tValidade\tCategoria");
+            string Query = "SELECT * FROM produtos";
             try
             {
                 MySqlCommand cmd = new MySqlCommand(Query, conexao.Conectar());
 
                 cmd.ExecuteNonQuery();
                 MySqlDataReader dr = cmd.ExecuteReader();
+                var tabela = new ConsoleTable("ID", "Nome", "Preço", "validade", "Categoria");
                 while (dr.Read())
                 {
                     int id = dr.GetInt32(0);
@@ -54,9 +56,9 @@ namespace Produto.Dao
                     float preco      = dr.GetFloat(2);
                     string validade  = dr.GetString(3);
                     string categoria = dr.GetString(4);
-                    Console.WriteLine($"\t{id}\t{nome}\t{preco}\t{validade}\t{categoria}");
+                    tabela.AddRow(id, nome, preco, validade, categoria);
                 }
-
+                tabela.Write();
                 conexao.fecharConexao();
             }
             catch (MySqlException ex)
@@ -71,7 +73,7 @@ namespace Produto.Dao
         public List<object> getProdutoById(int id)
         {
             Conexao conexao = new Conexao();
-            string Query = "SELECT * FROM tb_produtos WHERE id = "+id;
+            string Query = "SELECT * FROM produtos WHERE id = "+id;
             try
             {
                 List<object> produto = new List<object>();
@@ -89,8 +91,9 @@ namespace Produto.Dao
                     produto.Add(dr.GetString(4));
                 }
 
+                conexao.fecharConexao();
                 return produto;
- 
+
             }
             catch (MySqlException ex)
             {
@@ -100,13 +103,13 @@ namespace Produto.Dao
             }
 
 
-            conexao.fecharConexao();
+            
         }
 
         public void deletarProduto(int id)
         {
             Conexao conexao = new Conexao();
-            string Query = "DELETE FROM tb_produtos WHERE id = " + id;
+            string Query = "DELETE FROM produtos WHERE id = " + id;
             Console.WriteLine("\tID\tNome\tPreço\tValidade\tCategoria");
             try
             {
@@ -124,14 +127,11 @@ namespace Produto.Dao
                 
             }
 
-
-            conexao.fecharConexao();
-
         }
         public void alterarProduto(ProdutoDto produto, int id)
         {
             Conexao conexao = new Conexao();
-            string Query = $"UPDATE tb_produtos SET nome='{produto.Nome}',preco = " +
+            string Query = $"UPDATE produtos SET nome='{produto.Nome}',preco = " +
                 $"{produto.Preco},validade = '{produto.Validade}', categoria = '{produto.Categoria}' WHERE id = {id} ";
             try
             {
@@ -147,10 +147,7 @@ namespace Produto.Dao
             {
                 Console.WriteLine(ex.Message);
 
-            }
-
-
-            conexao.fecharConexao();
+            } 
 
         }
     }

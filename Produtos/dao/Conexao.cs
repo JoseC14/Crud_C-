@@ -16,7 +16,6 @@ namespace ConexaoDao
             {
                 conn = new MySqlConnection(stringConexao);
                 conn.Open();
-                Console.WriteLine("Conectado com sucesso");
 
             }
             catch (MySqlException ex)

@@ -108,7 +108,7 @@ class Program
                         {
                             produtoDto.Nome = (string?)lista[1];
                         }
-
+                        updPreco:
                         Console.WriteLine("Preço(Deixe Vazio para não mudar)");
                         string precoStr = Console.ReadLine();
 
@@ -118,7 +118,16 @@ class Program
                         }
                         else
                         {
-                            produtoDto.Preco = float.Parse(precoStr);
+                            float tempPreco;
+                            if (Single.TryParse(precoStr, out tempPreco))
+                            {
+                                produtoDto.Preco = tempPreco;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Preço Inválido!");
+                                goto updPreco;
+                            }
                         }
 
                         Console.WriteLine("Validade(Deixe Vazio para não mudar)");

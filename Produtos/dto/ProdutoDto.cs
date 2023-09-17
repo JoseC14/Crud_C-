@@ -1,7 +1,7 @@
 namespace Produto.Dto
 {
 
-
+    //Metodos get e set
     public class ProdutoDto
     {
         private string nome;

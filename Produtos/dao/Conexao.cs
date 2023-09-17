@@ -7,10 +7,10 @@ namespace ConexaoDao
     public class Conexao
     {
         private MySqlConnection conn;
-
+        //Função para conectar no banco de dados e retornar a conexao
         public MySqlConnection Conectar()
         {
-            // Construa a string de conexão
+            
             string stringConexao = $"Server=localhost;User=root;Password=;Database=db_produtos;";
             try
             {
@@ -26,7 +26,7 @@ namespace ConexaoDao
             return conn;
 
         }
-
+        // Função para fechar a conexão quando necessário
         public void fecharConexao()
         {
             if (conn.State == ConnectionState.Open)
